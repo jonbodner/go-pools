@@ -1,16 +1,13 @@
-package buffers
+package buffers2
 
 import (
 	"bytes"
-	"container/list"
-	"sync"
 	"sync/atomic"
 	"time"
 )
 
 type FixedBufferPool struct {
-	bufPool  *list.List
-	lock     sync.Mutex
+	bufPool  chan *bytes.Buffer
 	gets     uint64
 	puts     uint64
 	timeouts uint64
@@ -27,35 +24,32 @@ func NewDefaultFixedBufferPool() *FixedBufferPool {
 }
 
 func NewFixedBufferPool(maxBytesPerBuffer uint64, maxBufferCount uint32) *FixedBufferPool {
-	pool := list.New()
+	pool := make(chan *bytes.Buffer, maxBufferCount)
 	for i := uint32(0); i < maxBufferCount; i++ {
-		pool.PushBack(bytes.NewBuffer(make([]byte, maxBytesPerBuffer)))
+		pool <- bytes.NewBuffer(make([]byte, maxBytesPerBuffer))
 	}
 	return &FixedBufferPool{bufPool: pool, waiter: make(chan struct{}, maxBufferCount)}
 }
 
 func (p *FixedBufferPool) Close() error {
 	close(p.waiter)
-	p.lock.Lock()
-	defer p.lock.Unlock()
-	for el := p.bufPool.Front(); el != nil; el = p.bufPool.Front() {
-		p.bufPool.Remove(el).(*bytes.Buffer).Reset()
-	}
+	close(p.bufPool)
 	return nil
 }
 
 // Get selects an arbitrary buffer from the Pool
 // It may return nil if none is available.
 func (p *FixedBufferPool) Get() *bytes.Buffer {
-	p.lock.Lock()
-	defer p.lock.Unlock()
-	el := p.bufPool.Front()
-	if el != nil {
-		p.bufPool.Remove(el)
-		atomic.AddUint64(&p.gets, 1)
-		return el.Value.(*bytes.Buffer)
+	var buf *bytes.Buffer
+	select {
+	case buf = <-p.bufPool:
+	default:
 	}
-	return nil
+
+	if buf != nil {
+		atomic.AddUint64(&p.gets, 1)
+	}
+	return buf
 }
 
 func (p *FixedBufferPool) WaitForGet(maxWait time.Duration) *bytes.Buffer {
@@ -94,9 +88,7 @@ func (p *FixedBufferPool) WaitForGet(maxWait time.Duration) *bytes.Buffer {
 func (p *FixedBufferPool) Put(b *bytes.Buffer) {
 	b.Reset()
 
-	p.lock.Lock()
-	p.bufPool.PushBack(b)
-	p.lock.Unlock()
+	p.bufPool <- b
 
 	atomic.AddUint64(&p.puts, 1)
 	if len(p.waiter) != cap(p.waiter) {

@@ -24,3 +24,6 @@ _testmain.go
 *.prof
 # for library this is ignored
 vendor
+block_pprof.txt
+cpu_pprof.txt
+mem_pprof.txt

@@ -1,6 +1,8 @@
-hash: 464eab14bb4cc1528352e024b3a867515fd5aa7354540f7779ccc0e90e647edf
-updated: 2016-11-05T09:51:12.29744623-04:00
-imports: []
+hash: faaefe74ab3b77221ae4021916de57140dcffe2e1de7a0fd8cc9f414f08bf45e
+updated: 2016-11-07T14:09:47.91438735-05:00
+imports:
+- name: github.com/pkg/profile
+  version: 030571e6da0f040a04e94a9af0dd8b6dd0cce0eb
 testImports:
 - name: github.com/davecgh/go-spew
   version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
