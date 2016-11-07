@@ -36,6 +36,11 @@ func NewFixedBufferPool(maxBytesPerBuffer uint64, maxBufferCount uint32) *FixedB
 
 func (p *FixedBufferPool) Close() error {
 	close(p.waiter)
+	p.lock.Lock()
+	defer p.lock.Unlock()
+	for el := p.bufPool.Front(); el != nil; el = p.bufPool.Front() {
+		p.bufPool.Remove(el).(*bytes.Buffer).Reset()
+	}
 	return nil
 }
 

@@ -39,6 +39,7 @@ func TestBufferReset(t *testing.T) {
 
 	b2 := p.Get()
 	assert.Equal(t, 0, b2.Len())
+	p.Close()
 }
 
 func TestBufferGetWaiter(t *testing.T) {
