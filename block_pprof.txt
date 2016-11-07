@@ -1,0 +1,38 @@
+prof.norm
+97.77us of 97.77us total (  100%)
+      flat  flat%   sum%        cum   cum%
+   97.77us   100%   100%    97.77us   100%  runtime.chansend1
+         0     0%   100%    21.30us 21.78%  github.com/jdamick/go-pools/vendor/github.com/pkg/profile.Start.func7
+         0     0%   100%    21.30us 21.78%  os/signal.Notify
+         0     0%   100%    21.30us 21.78%  os/signal.Notify.func1
+         0     0%   100%    21.30us 21.78%  os/signal.enableSignal
+         0     0%   100%    21.30us 21.78%  os/signal.signal_enable
+         0     0%   100%    76.47us 78.22%  runtime.ensureSigM.func1
+         0     0%   100%    97.77us   100%  runtime.goexit
+         0     0%   100%    21.30us 21.78%  runtime.sigenable
+
+prof.fixed
+55.31us of 55.31us total (  100%)
+      flat  flat%   sum%        cum   cum%
+   55.31us   100%   100%    55.31us   100%  runtime.chansend1
+         0     0%   100%     9.12us 16.49%  github.com/jdamick/go-pools/vendor/github.com/pkg/profile.Start.func7
+         0     0%   100%     9.12us 16.49%  os/signal.Notify
+         0     0%   100%     9.12us 16.49%  os/signal.Notify.func1
+         0     0%   100%     9.12us 16.49%  os/signal.enableSignal
+         0     0%   100%     9.12us 16.49%  os/signal.signal_enable
+         0     0%   100%    46.19us 83.51%  runtime.ensureSigM.func1
+         0     0%   100%    55.31us   100%  runtime.goexit
+         0     0%   100%     9.12us 16.49%  runtime.sigenable
+
+prof.fixed2
+60.98us of 60.98us total (  100%)
+      flat  flat%   sum%        cum   cum%
+   60.98us   100%   100%    60.98us   100%  runtime.chansend1
+         0     0%   100%    10.12us 16.59%  github.com/jdamick/go-pools/vendor/github.com/pkg/profile.Start.func7
+         0     0%   100%    10.12us 16.59%  os/signal.Notify
+         0     0%   100%    10.12us 16.59%  os/signal.Notify.func1
+         0     0%   100%    10.12us 16.59%  os/signal.enableSignal
+         0     0%   100%    10.12us 16.59%  os/signal.signal_enable
+         0     0%   100%    50.87us 83.41%  runtime.ensureSigM.func1
+         0     0%   100%    60.98us   100%  runtime.goexit
+         0     0%   100%    10.12us 16.59%  runtime.sigenable

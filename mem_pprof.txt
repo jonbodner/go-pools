@@ -1,0 +1,36 @@
+prof.norm
+44.29kB of 44.29kB total (  100%)
+Dropped 4 nodes (cum <= 0.22kB)
+      flat  flat%   sum%        cum   cum%
+   44.29kB   100%   100%    44.29kB   100%  main.normalBuffs
+         0     0%   100%    44.29kB   100%  main.main
+         0     0%   100%    44.29kB   100%  runtime.goexit
+         0     0%   100%    44.29kB   100%  runtime.main
+
+prof.fixed
+435.26kB of 435.26kB total (  100%)
+Dropped 4 nodes (cum <= 2.18kB)
+      flat  flat%   sum%        cum   cum%
+  221.29kB 50.84% 50.84%   221.29kB 50.84%  container/list.(*List).PushBack
+  117.59kB 27.02% 77.86%   117.59kB 27.02%  github.com/jdamick/go-pools/buffers.NewFixedBufferPool
+   96.38kB 22.14%   100%    96.38kB 22.14%  bytes.makeSlice
+         0     0%   100%    96.38kB 22.14%  bytes.(*Buffer).WriteString
+         0     0%   100%    96.38kB 22.14%  bytes.(*Buffer).grow
+         0     0%   100%   221.29kB 50.84%  github.com/jdamick/go-pools/buffers.(*FixedBufferPool).Put
+         0     0%   100%   435.26kB   100%  main.fixedPoolsBuffs
+         0     0%   100%   435.26kB   100%  main.main
+         0     0%   100%   435.26kB   100%  runtime.goexit
+         0     0%   100%   435.26kB   100%  runtime.main
+
+prof.fixed2
+654.51kB of 654.51kB total (  100%)
+Dropped 4 nodes (cum <= 3.27kB)
+      flat  flat%   sum%        cum   cum%
+     522kB 79.75% 79.75%      522kB 79.75%  github.com/jdamick/go-pools/buffers2.NewFixedBufferPool
+  132.52kB 20.25%   100%   132.52kB 20.25%  bytes.makeSlice
+         0     0%   100%   132.52kB 20.25%  bytes.(*Buffer).WriteString
+         0     0%   100%   132.52kB 20.25%  bytes.(*Buffer).grow
+         0     0%   100%   654.51kB   100%  main.fixedPoolsBuffs2
+         0     0%   100%   654.51kB   100%  main.main
+         0     0%   100%   654.51kB   100%  runtime.goexit
+         0     0%   100%   654.51kB   100%  runtime.main
