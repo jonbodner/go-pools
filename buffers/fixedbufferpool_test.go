@@ -39,6 +39,7 @@ func TestBufferReset(t *testing.T) {
 
 	b2 := p.Get()
 	assert.Equal(t, 0, b2.Len())
+	p.Close()
 }
 
 func TestBufferGetWaiter(t *testing.T) {
@@ -87,4 +88,53 @@ func TestBufferGetWaiterTimeout(t *testing.T) {
 	p.Put(b)
 	wg2.Wait()
 	assert.Nil(t, b2)
+}
+
+func TestBufferCallback(t *testing.T) {
+	p := NewFixedBufferPool(5, 1)
+	defer p.Close()
+
+	var wg1 sync.WaitGroup
+	var b2 *bytes.Buffer
+
+	wg1.Add(1)
+	b := p.Get()
+	assert.NotNil(t, b)
+
+	cb := func(buf *bytes.Buffer) {
+		b2 = buf
+		wg1.Done()
+	}
+
+	p.AsyncCallbackWithBuffer(cb)
+	time.Sleep(1 * time.Second)
+	p.Put(b)
+	wg1.Wait()
+	assert.NotNil(t, b2)
+
+	b3 := p.Get()
+	assert.NotNil(t, b3)
+}
+
+func TestBufferCloseWhileWaiting(t *testing.T) {
+	p := NewFixedBufferPool(5, 1)
+	b := p.Get()
+	assert.NotNil(t, b)
+
+	var wg1 sync.WaitGroup
+	var b2 *bytes.Buffer
+
+	wg1.Add(1)
+	cb := func(buf *bytes.Buffer) {
+		b2 = buf
+		wg1.Done()
+	}
+
+	p.AsyncCallbackWithBuffer(cb)
+	time.Sleep(1 * time.Second)
+	p.Close()
+	time.Sleep(1 * time.Second)
+
+	b3 := p.Get()
+	assert.Nil(t, b3)
 }
