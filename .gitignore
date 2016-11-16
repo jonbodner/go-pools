@@ -24,3 +24,4 @@ _testmain.go
 *.prof
 # for library this is ignored
 vendor
+*.out

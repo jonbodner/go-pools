@@ -12,6 +12,7 @@ import (
 func TestBufferPool(t *testing.T) {
 	p := NewFixedBufferPool(5, 1)
 	assert.NotNil(t, p)
+	assert.Equal(t, p.Len(), 1)
 
 	b := p.Get()
 	assert.NotNil(t, b)
@@ -137,4 +138,5 @@ func TestBufferCloseWhileWaiting(t *testing.T) {
 
 	b3 := p.Get()
 	assert.Nil(t, b3)
+	assert.Nil(t, b2)
 }

@@ -35,8 +35,8 @@ func NewFixedBufferPool(maxBytesPerBuffer uint64, maxBufferCount uint32) *FixedB
 	return &FixedBufferPool{bufPool: pool, count: maxBufferCount}
 }
 
-func (p *FixedBufferPool) Len() uint32 {
-	return p.count
+func (p *FixedBufferPool) Len() int {
+	return int(p.count)
 }
 
 func (p *FixedBufferPool) Close() error {
