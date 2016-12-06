@@ -134,6 +134,7 @@ func TestWorkerPoolError(t *testing.T) {
 	fmt.Printf("o2: %#v\n", o2)
 
 	p.Stop()
+	assert.False(t, p.HasResult())
 
 	assert.Equal(t, len(jobsList), 2)
 	for _, jid := range jobsList {

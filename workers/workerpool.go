@@ -97,8 +97,14 @@ func (w *WorkerPool) SubmitJob(job *Job) {
 	w.in <- job
 }
 
+// Result will return the result from the worker, but if no result
+// is available, then it will block
 func (w *WorkerPool) Result() *Result {
 	return <-w.out
+}
+
+func (w *WorkerPool) HasResult() bool {
+	return len(w.out) > 0
 }
 
 func (w *WorkerPool) OutChannel() chan *Result {
