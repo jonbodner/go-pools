@@ -30,7 +30,9 @@ func NewFixedBufferPool(maxBytesPerBuffer uint64, maxBufferCount uint32) *FixedB
 	// it's tested to be faster than a list with mutexes
 	pool := make(chan *bytes.Buffer, maxBufferCount)
 	for i := uint32(0); i < maxBufferCount; i++ {
-		pool <- bytes.NewBuffer(make([]byte, maxBytesPerBuffer))
+		buf := bytes.NewBuffer(make([]byte, maxBytesPerBuffer))
+		buf.Reset()
+		pool <- buf
 	}
 	return &FixedBufferPool{bufPool: pool, count: maxBufferCount}
 }

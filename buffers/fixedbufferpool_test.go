@@ -12,16 +12,17 @@ import (
 func TestBufferPool(t *testing.T) {
 	p := NewFixedBufferPool(5, 1)
 	assert.NotNil(t, p)
-	assert.Equal(t, p.Len(), 1)
+	assert.Equal(t, 1, p.Len())
 
 	b := p.Get()
 	assert.NotNil(t, b)
+	assert.Equal(t, 0, b.Len())
 	defer p.Put(b)
 
 	b2 := p.Get()
 	assert.Nil(t, b2)
 
-	assert.True(t, b.Cap() == 5)
+	assert.Equal(t, 5, b.Cap())
 
 	assert.Equal(t, uint64(1), p.GetCount())
 	assert.Equal(t, uint64(0), p.PutCount())
