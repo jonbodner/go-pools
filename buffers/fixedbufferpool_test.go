@@ -1,7 +1,6 @@
 package buffers
 
 import (
-	"bytes"
 	"sync"
 	"testing"
 	"time"
@@ -37,6 +36,7 @@ func TestBufferReset(t *testing.T) {
 
 	b := p.Get()
 	b.WriteString("testing")
+
 	p.Put(b)
 
 	b2 := p.Get()
@@ -50,7 +50,7 @@ func TestBufferGetWaiter(t *testing.T) {
 	assert.NotNil(t, b)
 	var wg1, wg2 sync.WaitGroup
 
-	var b2 *bytes.Buffer
+	var b2 *FixedBuffer
 	wg1.Add(1)
 	wg2.Add(1)
 	go func() {
@@ -74,7 +74,7 @@ func TestBufferGetWaiterTimeout(t *testing.T) {
 	assert.NotNil(t, b)
 	var wg1, wg2 sync.WaitGroup
 
-	var b2 *bytes.Buffer
+	var b2 *FixedBuffer
 	wg1.Add(1)
 	wg2.Add(1)
 	go func() {
@@ -97,13 +97,13 @@ func TestBufferCallback(t *testing.T) {
 	defer p.Close()
 
 	var wg1 sync.WaitGroup
-	var b2 *bytes.Buffer
+	var b2 *FixedBuffer
 
 	wg1.Add(1)
 	b := p.Get()
 	assert.NotNil(t, b)
 
-	cb := func(buf *bytes.Buffer) {
+	cb := func(buf *FixedBuffer) {
 		b2 = buf
 		wg1.Done()
 	}
@@ -124,10 +124,10 @@ func TestBufferCloseWhileWaiting(t *testing.T) {
 	assert.NotNil(t, b)
 
 	var wg1 sync.WaitGroup
-	var b2 *bytes.Buffer
+	var b2 *FixedBuffer
 
 	wg1.Add(1)
-	cb := func(buf *bytes.Buffer) {
+	cb := func(buf *FixedBuffer) {
 		b2 = buf
 		wg1.Done()
 	}

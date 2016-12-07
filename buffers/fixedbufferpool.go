@@ -1,15 +1,14 @@
 package buffers
 
 import (
-	"bytes"
 	"sync/atomic"
 	"time"
 )
 
-type BufferAvailableFunc func(*bytes.Buffer)
+type BufferAvailableFunc func(*FixedBuffer)
 
 type FixedBufferPool struct {
-	bufPool  chan *bytes.Buffer
+	bufPool  chan *FixedBuffer
 	gets     uint64
 	puts     uint64
 	timeouts uint64
@@ -28,10 +27,9 @@ func NewDefaultFixedBufferPool() *FixedBufferPool {
 func NewFixedBufferPool(maxBytesPerBuffer uint64, maxBufferCount uint32) *FixedBufferPool {
 	// use a buffered channel as our pool of available byte buffers
 	// it's tested to be faster than a list with mutexes
-	pool := make(chan *bytes.Buffer, maxBufferCount)
+	pool := make(chan *FixedBuffer, maxBufferCount)
 	for i := uint32(0); i < maxBufferCount; i++ {
-		buf := bytes.NewBuffer(make([]byte, maxBytesPerBuffer))
-		buf.Reset()
+		buf := NewFixedBuffer(maxBytesPerBuffer)
 		pool <- buf
 	}
 	return &FixedBufferPool{bufPool: pool, count: maxBufferCount}
@@ -48,8 +46,8 @@ func (p *FixedBufferPool) Close() error {
 
 // Get selects an arbitrary buffer from the Pool
 // It may return nil if none is available.
-func (p *FixedBufferPool) Get() *bytes.Buffer {
-	var buf *bytes.Buffer
+func (p *FixedBufferPool) Get() *FixedBuffer {
+	var buf *FixedBuffer
 	select {
 	case buf = <-p.bufPool:
 	default:
@@ -74,14 +72,14 @@ func (p *FixedBufferPool) AsyncCallbackWithBuffer(cbFunc BufferAvailableFunc) {
 	}()
 }
 
-func (p *FixedBufferPool) WaitForGet(maxWait time.Duration) *bytes.Buffer {
+func (p *FixedBufferPool) WaitForGet(maxWait time.Duration) *FixedBuffer {
 	duration := 100 * time.Millisecond
 	if duration > maxWait {
 		duration = maxWait
 	}
 	start := time.Now()
 
-	var result *bytes.Buffer
+	var result *FixedBuffer
 ResultCheck:
 	for result == nil {
 		select {
@@ -104,9 +102,7 @@ ResultCheck:
 	return result
 }
 
-func (p *FixedBufferPool) Put(b *bytes.Buffer) {
-	b.Reset()
-
+func (p *FixedBufferPool) Put(b *FixedBuffer) {
 	p.bufPool <- b
 
 	atomic.AddUint64(&p.puts, 1)
