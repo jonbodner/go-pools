@@ -103,6 +103,7 @@ ResultCheck:
 }
 
 func (p *FixedBufferPool) Put(b *FixedBuffer) {
+	b.Reset()
 	p.bufPool <- b
 
 	atomic.AddUint64(&p.puts, 1)
