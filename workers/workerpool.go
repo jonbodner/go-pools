@@ -57,7 +57,6 @@ func (w *WorkerPool) Start() {
 			for {
 				select {
 				case job, ok := <-w.in:
-					fmt.Printf("job: %#v ok: %#v\n", job, ok)
 					if job != nil {
 						job.inWorkerTime = timestamp()
 						result, err := w.workerFunc(job)
