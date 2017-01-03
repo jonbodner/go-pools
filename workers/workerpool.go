@@ -3,7 +3,6 @@ package workers
 import (
 	"crypto/rand"
 	"encoding/binary"
-	"fmt"
 	"runtime"
 	"sync"
 	"time"
