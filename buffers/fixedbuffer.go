@@ -72,11 +72,17 @@ func (f *FixedBuffer) WriteTo(w io.Writer) (n int64, err error) {
 }
 
 func (f *FixedBuffer) WriteString(s string) (n int, err error) {
-	n = copy(f.b[f.off:], s)
+	off := f.off + len(f.b)
+	l := cap(f.b) - off
+	n = copy(f.b[off:l], s)
+	f.b = f.b[f.off : off+n]
 	return n, err
 }
 
 func (f *FixedBuffer) Write(p []byte) (n int, err error) {
-	n = copy(f.b[f.off:], p)
+	off := f.off + len(f.b)
+	l := cap(f.b) - off
+	n = copy(f.b[off:l], p)
+	f.b = f.b[f.off : off+n]
 	return n, err
 }
