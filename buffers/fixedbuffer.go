@@ -51,6 +51,10 @@ func (f *FixedBuffer) Cap() int {
 	return cap(f.b)
 }
 
+func (f *FixedBuffer) Left() int {
+	return f.Cap() - f.Len()
+}
+
 func (f *FixedBuffer) Reset() {
 	f.off = 0
 	f.b = f.b[0:0]
@@ -73,16 +77,14 @@ func (f *FixedBuffer) WriteTo(w io.Writer) (n int64, err error) {
 
 func (f *FixedBuffer) WriteString(s string) (n int, err error) {
 	off := f.off + len(f.b)
-	l := cap(f.b) - off
-	n = copy(f.b[off:l], s)
+	n = copy(f.b[off:cap(f.b)], s)
 	f.b = f.b[f.off : off+n]
 	return n, err
 }
 
 func (f *FixedBuffer) Write(p []byte) (n int, err error) {
 	off := f.off + len(f.b)
-	l := cap(f.b) - off
-	n = copy(f.b[off:l], p)
+	n = copy(f.b[off:cap(f.b)], p)
 	f.b = f.b[f.off : off+n]
 	return n, err
 }

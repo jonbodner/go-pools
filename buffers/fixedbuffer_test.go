@@ -33,6 +33,19 @@ func TestWriteToBuffer(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, n, len(str3))
 	assert.Equal(t, str3, string(b.b))
+
+	bSmall := NewFixedBuffer(4)
+	str4 := "test"
+	n, err = bSmall.Write([]byte(str4[0:2]))
+	assert.Nil(t, err)
+	assert.Equal(t, n, 2)
+	assert.Equal(t, 2, bSmall.Left())
+
+	n, err = bSmall.Write([]byte(str4[2:4]))
+	assert.Nil(t, err)
+	assert.Equal(t, n, 2)
+	assert.Equal(t, str4, string(bSmall.b))
+	assert.Equal(t, 0, bSmall.Left())
 }
 
 func TestFillBufferToCap(t *testing.T) {
