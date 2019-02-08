@@ -1,6 +1,7 @@
 package buffers
 
 import (
+	"context"
 	"sync/atomic"
 	"time"
 )
@@ -59,47 +60,48 @@ func (p *FixedBufferPool) Get() *FixedBuffer {
 	return buf
 }
 
+func (p *FixedBufferPool) AsyncCallbackWithBuffer(cbFunc BufferAvailableFunc) {
+	p.AsyncCallbackWithBufferContext(context.Background(), cbFunc)
+}
+
 // AsyncCallbackWithBuffer will use a go-routine to callback the given function with a non-nil buffer
 // when one becomes available.  Once it the callback is done with the buffer it will be
 // automatically put back into the pool for reuse.
-func (p *FixedBufferPool) AsyncCallbackWithBuffer(cbFunc BufferAvailableFunc) {
+func (p *FixedBufferPool) AsyncCallbackWithBufferContext(ctx context.Context, cbFunc BufferAvailableFunc) {
 	go func() {
-		buf := p.WaitForGet(876000 * time.Hour) // wait for a really long time (100yrs)
+		buf := p.WaitForGetContext(ctx, 876000*time.Hour) // wait for a really long time (100yrs)
 		if buf != nil {
+			defer p.Put(buf)
 			cbFunc(buf)
-			p.Put(buf)
 		}
 	}()
 }
 
 func (p *FixedBufferPool) WaitForGet(maxWait time.Duration) *FixedBuffer {
-	duration := 100 * time.Millisecond
-	if duration > maxWait {
-		duration = maxWait
-	}
-	start := time.Now()
+	return p.WaitForGetContext(context.Background(), maxWait)
+}
+func (p *FixedBufferPool) WaitForGetContext(ctx context.Context, maxWait time.Duration) *FixedBuffer {
+	remaining := maxWait
 
-	var result *FixedBuffer
-ResultCheck:
-	for result == nil {
+	for remaining > 0 {
+		duration := 100 * time.Millisecond
+		if duration > remaining {
+			duration = remaining
+		}
 		select {
 		case buf, ok := <-p.bufPool:
-			result = buf
-			if !ok {
-				break ResultCheck
+			if ok {
+				return buf
 			}
 		case <-time.After(duration):
-		default:
-		}
-
-		// check max time wait
-		if result == nil && time.Since(start) > maxWait {
 			atomic.AddUint64(&p.timeouts, 1)
-			return result
+		case <-ctx.Done():
+			return nil
 		}
+		remaining -= duration
 	}
 
-	return result
+	return nil
 }
 
 func (p *FixedBufferPool) Put(b *FixedBuffer) {
